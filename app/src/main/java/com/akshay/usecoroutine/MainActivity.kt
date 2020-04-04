@@ -28,22 +28,35 @@ class MainActivity : AppCompatActivity() {
          }*/
 
         GlobalScope.launch(Dispatchers.Main) {
-            textView.text = "Downloading"
-            progressBar2.visibility = View.VISIBLE
-            calculateProgress(100)
-            textView.text = "Downloaded"
-            progressBar2.visibility = View.GONE
+
+            updateText("Downloading") // ui thread
+
+            progressBar2.visibility = View.VISIBLE // ui thread
+
+            val result = calculateProgress(100) // worker thread - suspend till the work get finish
+
+            updateText(result) // ui thread
+
+            progressBar2.visibility = View.GONE // ui thread
         }
     }
 
-    private suspend fun calculateProgress(input: Int) {
-        withContext(Dispatchers.Default) {
+    private suspend fun calculateProgress(input: Int): String =
+        withContext(Dispatchers.IO) {
             (0..input step 10).forEach { count ->
                 delay(1000)
                 runOnUiThread {
-                    progressBar.progress = count
+                    updateProgressBar(count)
                 }
             }
+            "Downloaded"
         }
+
+    private fun updateText(lable: String) {
+        textView.text = lable
+    }
+
+    private fun updateProgressBar(count: Int) {
+        progressBar.progress = count
     }
 }

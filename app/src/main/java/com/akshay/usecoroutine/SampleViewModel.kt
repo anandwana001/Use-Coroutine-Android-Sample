@@ -1,11 +1,12 @@
 package com.akshay.usecoroutine
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.akshay.usecoroutine.database.SampleDao
 import com.akshay.usecoroutine.database.SampleTable
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Created by akshaynandwana on
@@ -13,12 +14,9 @@ import kotlinx.coroutines.*
  **/
 
 class SampleViewModel(
-    val database: SampleDao,
-    application: Application
-) : AndroidViewModel(application) {
+    val database: SampleDao
+) : ViewModel() {
 
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
     var sampleData = MutableLiveData<String>()
 
     init {
@@ -26,7 +24,7 @@ class SampleViewModel(
     }
 
     private fun initializeSampleData() {
-        uiScope.launch {
+        viewModelScope.launch {
             fillDatabase()
             delay(2000)
             sampleData.value = getSampleDataFromDatabase()
@@ -34,21 +32,12 @@ class SampleViewModel(
     }
 
     private suspend fun getSampleDataFromDatabase(): String {
-        return withContext(Dispatchers.IO) {
-            database.getAllSampleData().toString()
-        }
+        return database.getAllSampleData().toString()
     }
 
     private suspend fun fillDatabase() {
-        withContext(Dispatchers.IO) {
-            database.insert(
-                SampleTable(sampleData = "Sample pre fill data")
-            )
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelJob.cancel()
+        database.insert(
+            SampleTable(sampleData = "Sample pre fill data")
+        )
     }
 }

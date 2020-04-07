@@ -45,14 +45,14 @@ class MainActivity : AppCompatActivity() {
         }*/
 
         val dataSource = SampleDatabase.getInstance(application).sampleDao
-        val viewModelFactory = SampleViewModelFactory(dataSource, application)
+        val viewModelFactory = SampleViewModelFactory(dataSource)
         val sampleViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory
             ).get(SampleViewModel::class.java)
 
         sampleViewModel.sampleData.observe(this, Observer {
-            textView.text = "Data from Database -> " + it.toString()
+            textView.text = "Data from Database -> ${it} \n"
         })
     }
 

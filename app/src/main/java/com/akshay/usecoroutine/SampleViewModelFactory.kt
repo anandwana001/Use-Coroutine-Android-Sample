@@ -1,6 +1,5 @@
 package com.akshay.usecoroutine
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.akshay.usecoroutine.database.SampleDao
@@ -11,13 +10,12 @@ import com.akshay.usecoroutine.database.SampleDao
  **/
 
 class SampleViewModelFactory(
-    private val dataSource: SampleDao,
-    private val application: Application
+    private val dataSource: SampleDao
 ) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SampleViewModel::class.java)) {
-            return SampleViewModel(dataSource, application) as T
+            return SampleViewModel(dataSource) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

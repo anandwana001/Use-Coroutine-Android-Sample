@@ -13,8 +13,8 @@ import androidx.room.Query
 interface SampleDao {
 
     @Insert
-    fun insert(night: SampleTable)
+    suspend fun insert(night: SampleTable)
 
     @Query("SELECT * FROM sample_table")
-    fun getAllSampleData(): List<SampleTable>
+    suspend fun getAllSampleData(): List<SampleTable>
 }
